@@ -1,0 +1,39 @@
+name: Build and Deploy React to Build Branch
+
+on:
+  push:
+    branches:
+      - main  # Ou o nome da branch onde o código principal está
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checar o código
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Step 2: Configurar Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'  # Escolha a versão adequada para o seu projeto
+
+      # Step 3: Instalar dependências
+      - name: Install dependencies
+        run: npm install
+
+      # Step 4: Buildar o projeto React
+      - name: Build React App
+        run: npm run build
+
+      # Step 5: Deploy para a branch 'build'
+      - name: Deploy to Build Branch
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout --orphan build
+          git --work-tree=build add --all
+          git commit -m "Deploy React build"
+          git push origin build --force
